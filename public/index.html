@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DraftLoop</title>
+  <link rel="stylesheet" href="/editor.css">
+  <script src="/editor.js" defer></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="doc-heading">
+      <strong id="doc-title">Loading…</strong>
+      <span id="save-status" class="status" role="status" aria-live="polite"></span>
+    </div>
+    <div class="actions">
+      <div class="segmented" role="group" aria-label="Mode">
+        <button id="mode-edit" type="button" aria-pressed="true">Editing</button>
+        <button id="mode-view" type="button" aria-pressed="false">Viewing</button>
+      </div>
+      <button id="comment-button" type="button" title="Comment on the selection (Ctrl+Alt+M)" disabled>Comment</button>
+      <button id="expand-all" type="button">Expand all</button>
+      <button id="collapse-all" type="button">Collapse all</button>
+    </div>
+  </header>
+  <div id="banner" class="banner" role="alert" hidden></div>
+  <div class="layout">
+    <main class="document-pane">
+      <iframe id="document" title="Draft document"></iframe>
+      <div id="document-list" class="document-list" hidden></div>
+    </main>
+    <aside class="side-panel" aria-label="Review">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-comments" type="button" aria-selected="true" aria-controls="panel-comments">Comments <span id="comment-count" class="count"></span></button>
+        <button role="tab" id="tab-history" type="button" aria-selected="false" aria-controls="panel-history">History</button>
+      </div>
+      <section id="panel-comments" class="panel" role="tabpanel" aria-labelledby="tab-comments">
+        <div class="panel-tools">
+          <label><input type="checkbox" id="show-resolved"> Show resolved</label>
+          <button id="copy-request" type="button" title="Copy a message to paste into your Copilot session">Copy review request</button>
+        </div>
+        <p class="hint">Select text, or right-click a diagram, to comment. Type directly in the page to edit. When you are ready, ask Copilot to review your comments.</p>
+        <ol id="comment-list" class="comment-list"></ol>
+      </section>
+      <section id="panel-history" class="panel" role="tabpanel" aria-labelledby="tab-history" hidden>
+        <p class="hint">Every saved change is a version. Select a version to see what changed.</p>
+        <div id="history-detail" class="history-detail" hidden></div>
+        <ol id="history-list" class="history-list"></ol>
+      </section>
+    </aside>
+  </div>
+  <div id="context-menu" class="context-menu" role="menu" hidden>
+    <button type="button" role="menuitem" id="menu-comment">Comment</button>
+  </div>
+  <form id="composer" class="composer" hidden>
+    <p id="composer-target" class="composer-target"></p>
+    <label for="composer-body" class="visually-hidden">Comment</label>
+    <textarea id="composer-body" rows="4" required placeholder="What should change?"></textarea>
+    <div class="composer-actions">
+      <button type="button" id="composer-cancel">Cancel</button>
+      <button type="submit" class="primary">Comment</button>
+    </div>
+  </form>
+</body>
+</html>
