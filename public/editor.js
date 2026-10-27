@@ -490,9 +490,12 @@
     }
     const summary = event.target.closest?.('summary');
     if (summary && editable()) {
-      // While editing, only the arrow area toggles a section so its title text stays editable.
+      // Editable pages do not toggle sections natively. A single click toggles;
+      // a double click selects a word to edit, so undo the first click's toggle.
       event.preventDefault();
-      if (event.clientX - summary.getBoundingClientRect().left < 28) summary.parentElement.open = !summary.parentElement.open;
+      const details = summary.parentElement;
+      if (event.detail === 1 && doc.getSelection().isCollapsed) details.open = !details.open;
+      else if (event.detail === 2) details.open = !details.open;
     }
     const caret = doc.caretRangeFromPoint?.(event.clientX, event.clientY);
     if (caret && state.anchors) {

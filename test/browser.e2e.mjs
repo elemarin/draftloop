@@ -149,6 +149,31 @@ try {
   pass('right-clicking a diagram comments on the whole diagram and outlines it');
   await screenshot('review-editor-2-comments.png');
 
+  const leftClick = async ({ x, y }) => {
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+    await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
+    await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', buttons: 0, clickCount: 1 });
+  };
+  const sectionPoint = await evaluate(`(() => {
+    const frame = document.getElementById('document'); const d = frame.contentDocument;
+    const details = [...d.querySelectorAll('details')].find(item => !item.open && item.querySelector(':scope > summary strong'));
+    if (!details) return null;
+    details.id ||= 'e2e-section';
+    const title = details.querySelector(':scope > summary strong');
+    title.scrollIntoView({ block: 'center' });
+    const b = title.getBoundingClientRect(); const f = frame.getBoundingClientRect();
+    return { id: details.id, x: f.left + b.left + b.width / 2, y: f.top + b.top + b.height / 2 };
+  })()`);
+  if (sectionPoint) {
+    const isOpen = `document.getElementById('document').contentDocument.getElementById(${JSON.stringify(sectionPoint.id)}).open`;
+    await leftClick(sectionPoint);
+    await waitFor(isOpen, 'section opens on title click');
+    await sleep(400);
+    await leftClick(sectionPoint);
+    await waitFor(`!${isOpen}`, 'section closes on second title click');
+    pass('clicking a section title in editing mode opens and closes it');
+  }
+
   const authoredOpen = (fs.readFileSync(draft, 'utf8').match(/<details\b[^>]*\bopen\b/g) || []).length;
   await evaluate(`document.getElementById('expand-all').click()`);
   const editPoint = await evaluate(`(() => {
